@@ -1,0 +1,7 @@
+sed -i '/^\[mysqld\]$/a\binlog-ignore = information_schema' /etc/my.cnf.d/server.cnf
+sed -i '/^\[mysqld\]$/a\binlog-ignore = mysql' /etc/my.cnf.d/server.cnf
+sed -i '/^\[mysqld\]$/a\skip-name-resolve' /etc/my.cnf.d/server.cnf
+sed -i '/^\[mysqld\]$/a\auto-increment-increment = 1' /etc/my.cnf.d/server.cnf # 注意node4节点上必须不同
+sed -i '/^\[mysqld\]$/a\log-bin = mysql-bin' /etc/my.cnf.d/server.cnf
+sed -i '/^\[mysqld\]$/a\auto_increment_offset = 1'  /etc/my.cnf.d/server.cnf # 注意node4节点上必须不同
+sed -i '/^\[mysqld\]$/a\server-id = 1' /etc/my.cnf.d/server.cnf # 注意node4节点上必须不同

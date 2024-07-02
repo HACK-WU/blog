@@ -1,0 +1,90 @@
+at计划任务
+	yum install at -y
+	at <TIMESPEC>
+		now +5min
+		teatime tomorrow (teatime is 16:00)
+		noon +4 days
+		5pm august 3 2021
+	atq可以查看任务队列
+	at只可以执行一次就结束
+
+rsyslog是系统上的日志子系统，从红帽6开始rsyslog替代了syslog
+
+/etc/rsyslog.conf是主配置文件：
+# 告诉rsyslogd进程 哪个设备(facility)，关于哪个级别的信息，以及如何处理
+# 以第一行为例，ssh服务将自己的日志发送到了authpriv设备中，rsyslog会根据第一行的配置将日志保存到/var/log/secure
+authpriv.*                                              /var/log/secure
+mail.*                                                  -/var/log/maillog
+cron.*                                                  /var/log/cron
+*.emerg                                                 :omusrmsg:*
+authpriv.*                                              *					# 所有终端
+authpriv.*                                              @192.168.1.123		# 以UDP的方式发送给远程服务器
+authpriv.*                                              @@192.168.1.123		# 以TCP的方式发送给远程服务器
+
+日志设备点后面可以跟上日志级别，日志信息分为以下级别，从上到下级别一次降低
+	none	none不是一个等级，它表示不记录服务的所有信息
+0 	emerg	系统不可用
+1	alert	特别留意的报警信息
+2	crit	非常严重的状况
+3	err		错误信息	
+4	warning	警告信息
+5	notice	稍微需要注意的信息
+6	info	正常信息
+7	debug	调试信息，开发人员使用
+
+为什么需要有日志切割？
+自己进行日志切割，下面以切割httpd访问日志为例子
+	先切割旧日志文件：mv /var/log/httpd/access_log /var/log/httpd/`date +%F`_access_log
+	再重启服务生成新的日志文件：systemctl restart httpd
+	删除一个月之前的文件：find /var//log/httpd/ -atime +30 -delete
+	将以上三步写入计划任务中
+	
+rsyslog负责接收日志，logrotate负责切割日志，二者一般结合起来使用
+
+FTP是基于TCP协议之上的具有C/S架构的文件服务器
+需要通过控制连接（20端口）来控制整个双方的通信
+需要通过数据连接（21端口）来进行数据通信
+	数据连接有两种不同的方式，分别是主动模式和被动模式
+	主动模式，最大的特点是数据连接由服务器的20端口主动发起连接，这种情况有可能被客户端的防火墙给拒绝
+	被动模式，是由客户端向服务端随机端口发起连接
+	
+
+ftp的常用命令
+	上传文件：put 源文件名 目的文件名
+	下载文件：get 源文件名 目的文件名
+	重命名文件: rename 源文件名 目的文件名
+	创建目录：mkdir
+	
+ftp的三种不同的登陆方式
+匿名用户想要有所有权限
+	第一个要点，/etc/vsftpd/vsftpd.conf
+		anonymous_enable=YES
+		anon_umask=022
+		anon_upload_enable=Yes
+		anon_mkdir_write_enable=Yes
+		anon_other_write_enable=Yes
+	第二个要点，不能将/var/ftp目录的权限修改过大，否则会登陆失败
+本地用户想要有所有权限
+	local_enable=YES
+	write_enable=YES
+	local_umask=022
+虚拟用户想要有所有权限
+	第一个要点，/etc/vsftpd/vsftpd
+		anonymous_enable=YES
+		anon_umask=022
+		anon_upload_enable=Yes
+		anon_mkdir_write_enable=Yes
+		anon_other_write_enable=Yes
+	第二个要点，不能将/var/ftp目录的权限修改过大，否则会登陆失败
+	如果想要单独设置针对某一个用户的权限控制，可以将权限的目录通过user_config_dir=/etc/vsftpd/vusers_dir指定，在这个目录下创建与用户名同名的文件
+
+
+
+
+
+
+
+
+
+
+

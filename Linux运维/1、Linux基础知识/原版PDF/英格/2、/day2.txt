@@ -1,0 +1,116 @@
+文件时间
+	atime：最近被访问的时间
+	mtime：最近内容被修改的时间
+	ctime：文件属性最近被修改的时间
+
+文件类型
+	Linux中一切皆是文件
+	-：普通文件
+	d：目录文件
+	b：块设备文件
+	s：socket文件
+	p：管道文件
+	l：链接文件
+	c：字符文件
+	
+	一共可以有三种不同的方式查看文件类型：ll、file、stat
+
+which命令
+	可以在查找到环境变量$PATH中路径里的文件，一般用来查找系统的自带指令
+
+locate命令
+	yum -y install mlocate
+	这个查找文件的速度比较快，原因是会先将文件路径生成一个数据库，然后查找的时候在数据库中查找
+
+重定向
+	输出重定向
+		正确输出重定向
+			正确覆盖重定向
+				>
+			正确追加重定向
+				>>
+		错误输出重定向
+			错误覆盖重定向
+				2>
+			错误追加重定向
+				2>>
+		标准重定向
+			&>
+		合并重定向
+			1>&2
+			2>&1
+	输入重定向
+		输入覆盖重定向
+			cat > 文件路径 <<EOF ....................EOF
+		输入追加重定向
+			cat >> 文件路径 <<EOF ....................EOF
+	
+/etc/passwd
+存放用户信息的文件
+root:x:0:0:root:/root:/bin/bash
+	用户名
+	密码占位符
+	uid
+		uid为0的用户为root用户
+		centos7中uid在1-999的用户为系统用户
+		centos7中uid1000+的用户为普通用户
+	gid
+		组id，概念和uid类似
+	描述信息
+	用户的家目录
+	用户的登陆shell
+
+/etc/shadow
+存放用户密码信息的文件
+
+/etc/group
+存放组信息的文件
+
+两种改密码的方式
+	passwd 用户名
+	echo "password" | passwd --stdin 用户名
+	
+sudo提权
+	通常普通的权限比较低，如果想要给普通root权限的话需要进行sudo提权，sudo提权的思路是将普通用户加入到wheel组中即可
+	usermod -aG wheel 用户名
+	
+文件权限
+	每个文件针对三类不同的对象设置了三种权限分别是rwx
+	文件权限可以有字符的表示形式也可以用数字进行表示，r=4，w=2，x=1
+	r：可读
+	w：可写
+	x：可执行
+	
+chown：更改文件的属主属组命令
+	chown 属主 文件名
+	chown :属组 文件名
+	chown 属主:属组 文件名
+
+chmod：更改文件权限的命令
+	[root@server1 ~]# chmod a+x test1
+	[root@server1 ~]# ll
+	总用量 4
+	-rwxr-xr-x. 1 root root 65 1月  13 09:59 test1
+	[root@server1 ~]# chmod a-x test1 
+	[root@server1 ~]# ll
+	总用量 4
+	-rw-r--r--. 1 root root 65 1月  13 09:59 test1
+	[root@server1 ~]# chmod g=rw- test1
+	[root@server1 ~]# ll
+	总用量 4
+	-rw-rw-r--. 1 root root 65 1月  13 09:59 test1
+	[root@server1 ~]# chmod u=rw-,g=r--,o=r-- test1 
+	[root@server1 ~]# ll
+	总用量 4
+	-rw-r--r--. 1 root root 65 1月  13 09:59 test1
+	[root@server1 ~]# chmod 755 test1 
+	[root@server1 ~]# ll
+	总用量 4
+	-rwxr-xr-x. 1 root root 65 1月  13 09:59 test1
+	
+基本权限中r、w、x对于文件和目录的意义分别是什么？
+
+umask：是决定了在该目录下创建文件时的默认权限
+	创建一个文件时，文件的权限为666-umask值
+	创建一个目录时，目录的权限为777-umask值
+	
