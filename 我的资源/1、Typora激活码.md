@@ -1,4 +1,4 @@
 # Typora
 
-> **9AFDWH-LCPCBR-LRBTBC-LMM7V3**
+> **9AFDxxxxxxxxxx**
 
